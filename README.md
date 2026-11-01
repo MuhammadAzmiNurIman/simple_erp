@@ -156,7 +156,10 @@ npm run build
 - Frontend menerima `VITE_API_BASE_URL` saat build. Untuk API pada domain berbeda, isikan base URL penuh, misalnya `https://api.example.com/api/v1`.
 - Backend produksi memerlukan `SECRET_KEY`, `JWT_SECRET_KEY`, `DATABASE_URL`, dan `CORS_ORIGINS` eksplisit. Wildcard CORS ditolak dalam mode produksi.
 - Simpan semua secret di environment/secret manager platform hosting, bukan di GitHub atau `render.yaml`.
-- File `render.yaml` menyiapkan layanan backend dan frontend untuk staging/demo di Render. `DATABASE_URL`, secret, CORS, Redis, dan URL API frontend harus diisi pada dashboard Render. Blueprint ini tidak membuat database TiDB otomatis.
+- Untuk Vercel, hubungkan repository GitHub sebagai **dua proyek**: satu dengan Root Directory `backend`, satu lagi dengan Root Directory `frontend`. `backend/index.py` mengekspos aplikasi Flask sebagai WSGI function; `backend/vercel.json` dan `frontend/vercel.json` berisi konfigurasi build.
+- Pada proyek backend Vercel, isi environment `FLASK_ENV=production`, `SECRET_KEY`, `JWT_SECRET_KEY`, `DATABASE_URL`, `CORS_ORIGINS`, dan `RATELIMIT_STORAGE_URI`. Pada proyek frontend, isi `VITE_API_BASE_URL` dengan URL backend ditambah `/api/v1`. Environment frontend dimasukkan saat build; secret backend hanya berada di proyek backend.
+- Aiven URL/credential tidak boleh disimpan di file konfigurasi atau commit. Gunakan connection string baru setelah merotasi credential yang terekspos. Sertifikat CA Aiven yang diperlukan berada di `backend/certs/aiven-ca.pem`; pastikan URL memakai path CA yang benar untuk root project backend.
+- File `render.yaml` tetap tersedia sebagai opsi Render. Konfigurasi Render tidak membuat database TiDB/Aiven otomatis.
 - Migrasi database adalah langkah deployment terpisah; jangan menjalankannya otomatis dari setiap worker. Backup dan uji pemulihan sebelum migrasi produksi.
 
 > Paket hosting gratis cocok untuk staging/demo dan dapat memiliki keterbatasan uptime, resource, backup, serta penyimpanan. Verifikasi kebijakan provider saat deploy; gunakan layanan database dengan backup/pemulihan yang sesuai sebelum menyimpan transaksi operasional penting.

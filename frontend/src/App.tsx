@@ -1411,14 +1411,18 @@ function DashboardPage({
   const [toDate, setToDate] = useState(localDate)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
-  const quickActions: Array<{ page: PageId; title: string; description: string; permission: string[]; icon: typeof Package }> = [
+  const availableQuickActions: Array<{ page: PageId; title: string; description: string; permission: string[]; icon: typeof Package }> = [
     { page: 'sales', title: 'Buat pesanan penjualan', description: 'Catat kebutuhan pelanggan dan pantau pemenuhan.', permission: ['sales_orders.create'], icon: ShoppingCart },
     { page: 'purchasing', title: 'Buat pesanan pembelian', description: 'Ajukan pembelian barang kepada supplier.', permission: ['purchase_orders.create'], icon: Truck },
     { page: 'operations', title: 'Kelola pekerjaan gudang', description: 'Terima barang, transfer, atau ajukan penyesuaian stok.', permission: ['inventory.transfer.create', 'inventory.adjust.create', 'goods_receipts.create', 'shipments.post'], icon: WarehouseIcon },
     { page: 'operations', title: 'Tinjau pengajuan', description: 'Periksa transaksi yang menunggu persetujuan Anda.', permission: ['inventory.transfer.approve', 'inventory.adjust.approve', 'purchase_orders.approve', 'sales_orders.approve'], icon: ClipboardList },
     { page: 'finance', title: 'Buka keuangan', description: 'Pantau invoice, tagihan, dan pembayaran.', permission: ['finance.read'], icon: FileText },
     { page: 'reports', title: 'Lihat laporan', description: 'Telusuri ringkasan dan ekspor laporan operasional.', permission: ['reports.read'], icon: Activity },
-  ].filter((action) => canAccessPage(action.page, permissions) && action.permission.some((permission) => permissions.includes(permission)))
+  ]
+  const quickActions = availableQuickActions.filter(
+    (action) => canAccessPage(action.page, permissions)
+      && action.permission.some((permission) => permissions.includes(permission)),
+  )
 
   useEffect(() => {
     let active = true
